@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
@@ -118,16 +118,6 @@ export const AdminUsersPage = () => {
       await queryClient.invalidateQueries({ queryKey: ['admin-teachers-options'] })
     },
   })
-
-  const teachersById = useMemo(() => {
-    const map = new Map<string, string>()
-
-    for (const teacher of teachersQuery.data ?? []) {
-      map.set(teacher.id, teacher.name)
-    }
-
-    return map
-  }, [teachersQuery.data])
 
   const onSubmit = handleSubmit(async (values) => {
     setSubmitError(null)

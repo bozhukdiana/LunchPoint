@@ -37,7 +37,10 @@ export const createClass = async (schoolYearId: string, payload: UpsertClassPayl
 }
 
 export const updateClass = async (schoolYearId: string, classId: string, payload: UpsertClassPayload) => {
-  await updateDoc(doc(db, 'schoolYears', schoolYearId, 'classes', classId), payload)
+  await updateDoc(doc(db, 'schoolYears', schoolYearId, 'classes', classId), {
+    name: payload.name,
+    classTeacherId: payload.classTeacherId,
+  })
 }
 
 export const setClassArchivedState = async (schoolYearId: string, classId: string, archived: boolean) => {
