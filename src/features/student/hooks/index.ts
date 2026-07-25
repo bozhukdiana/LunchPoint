@@ -1,1 +1,1 @@
-export {};
+export { useTodayMeal, useMarkMeal } from './useStudentData';
