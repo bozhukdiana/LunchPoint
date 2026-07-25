@@ -21,8 +21,16 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'student';
     }
 
+    function teacherClassId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.classId;
+    }
+
     match /users/{userId} {
-      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin() || isTeacher());
+      allow get: if isSignedIn() && (
+        request.auth.uid == userId ||
+        isAdmin() ||
+        (isTeacher() && (userId == request.auth.uid || resource.data.classId == teacherClassId()))
+      );
       allow list: if isAdmin() || isTeacher();
       allow create, update: if isAdmin();
       allow delete: if false;
@@ -46,12 +54,15 @@ service cloud.firestore {
     }
 
     match /meals/{mealId} {
-      allow read: if isAdmin() || isTeacher() ||
+      allow get: if isAdmin() ||
+        (isTeacher() && resource.data.classId == teacherClassId()) ||
         (isStudent() && resource.data.studentId == request.auth.uid);
       allow list: if isAdmin() || isTeacher() || isStudent();
-      allow create: if isAdmin() || isTeacher() ||
+      allow create: if isAdmin() ||
+        (isTeacher() && request.resource.data.classId == teacherClassId()) ||
         (isStudent() && request.resource.data.studentId == request.auth.uid);
-      allow update: if isAdmin() || isTeacher();
+      allow update: if isAdmin() ||
+        (isTeacher() && resource.data.classId == teacherClassId());
       allow delete: if false;
     }
 

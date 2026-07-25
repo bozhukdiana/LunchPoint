@@ -4,6 +4,7 @@ import { ErrorState, LoadingState } from '@/features/student/components/AsyncSta
 import { EmptyState } from '@/features/student/components/AsyncState';
 import { Toaster } from '@/features/student/components/Toaster';
 import { useToast } from '@/features/student/hooks/useToast';
+import { formatTodayDate } from '@/features/student/utils/dateUtils';
 import {
   StudentMealCard,
   TeacherFilters,
@@ -14,15 +15,6 @@ import {
 import { useActiveSchoolYearId, useTeacherClass, useTeacherStudents, useUpdateMealStatus } from '@/features/teacher/hooks/useTeacherData';
 import type { MealStatusFilter } from '@/features/teacher/types/teacher.types';
 import type { StoredMealStatus } from '@/features/student/types/student.types';
-
-function formatTodayDate(): string {
-  return new Date().toLocaleDateString('uk-UA', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
 
 export function TeacherDashboardPage() {
   const { profile } = useAuth();

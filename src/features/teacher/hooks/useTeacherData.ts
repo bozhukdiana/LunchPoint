@@ -32,13 +32,17 @@ export function useTeacherStudents(classId: string) {
         getTodayMealRecordsForClass(classId),
       ]);
       const mealMap = new Map(meals.map((m) => [m.studentId, m]));
-      return students.map((s) => ({
-        uid: s.uid,
-        displayName: s.displayName ?? '',
-        classId: s.classId ?? classId,
-        mealStatus: (mealMap.get(s.uid)?.status ?? 'pending') as MealStatus,
-        mealRecordId: mealMap.get(s.uid)?.id ?? null,
-      }));
+      return students.map((s) => {
+        const meal = mealMap.get(s.uid);
+        const mealStatus: MealStatus = meal ? meal.status : 'pending';
+        return {
+          uid: s.uid,
+          displayName: s.displayName ?? '',
+          classId: s.classId ?? classId,
+          mealStatus,
+          mealRecordId: meal?.id ?? null,
+        };
+      });
     },
     enabled: !!classId,
   });
