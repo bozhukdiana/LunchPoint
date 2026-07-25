@@ -11,6 +11,7 @@ import { AuthErrorPage } from '@/features/auth/pages/AuthErrorPage';
 import { SignInPage } from '@/features/auth/pages/SignInPage';
 import { UnauthorizedPage } from '@/features/auth/pages/UnauthorizedPage';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { ImportUsersPage } from '@/features/admin/pages/ImportUsersPage';
 import { ReportsPage } from '@/features/reports/pages/ReportsPage';
 import { StudentDashboardPage } from '@/features/student/pages/StudentDashboardPage';
 import { TeacherDashboardPage } from '@/features/teacher/pages/TeacherDashboardPage';
@@ -68,6 +69,7 @@ const router = createBrowserRouter([
       { path: 'settings', element: <SettingsPage /> },
       { path: 'logs', element: <LogsPage /> },
       { path: 'reports', element: <ReportsPage /> },
+      { path: 'import', element: <ImportUsersPage /> },
     ],
   },
   {
