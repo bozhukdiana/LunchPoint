@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 export type ToastVariant = 'success' | 'error';
 
@@ -12,9 +12,10 @@ const DISMISS_MS = 3500;
 
 export function useToast() {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const counter = useRef(0);
 
   const addToast = useCallback((message: string, variant: ToastVariant) => {
-    const id = Date.now();
+    const id = ++counter.current;
     setToasts((prev) => [...prev, { id, message, variant }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));

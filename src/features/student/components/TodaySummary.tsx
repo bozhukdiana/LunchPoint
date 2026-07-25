@@ -33,7 +33,7 @@ export function TodaySummary({ displayName, className, status, isSaving, onMarkM
 
       <MealStatusCard status={status} />
 
-      {status === 'pending' && <MealButton disabled={false} isPending={isSaving} onClick={onMarkMeal} />}
+      {status === 'pending' && <MealButton isPending={isSaving} onClick={onMarkMeal} />}
     </div>
   );
 }
