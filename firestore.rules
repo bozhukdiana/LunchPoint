@@ -2,21 +2,35 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
     function isAdmin() {
-      return request.auth != null &&
+      return isSignedIn() &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Authentication requires only a user's own authorization profile to be readable.
+    function isTeacher() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
+    }
+
+    function isStudent() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'student';
+    }
+
     match /users/{userId} {
-      allow get: if request.auth != null && request.auth.uid == userId || isAdmin();
-      allow list: if isAdmin();
+      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin() || isTeacher());
+      allow list: if isAdmin() || isTeacher();
       allow create, update: if isAdmin();
       allow delete: if false;
     }
 
     match /classes/{classId} {
-      allow read, create, update: if isAdmin();
+      allow read: if isAdmin() || isTeacher() || isStudent();
+      allow create, update: if isAdmin();
       allow delete: if false;
     }
 
@@ -26,16 +40,26 @@ service cloud.firestore {
     }
 
     match /settings/{settingId} {
-      allow read, create, update: if isAdmin();
+      allow read: if isAdmin() || isTeacher() || isStudent();
+      allow create, update: if isAdmin();
+      allow delete: if false;
+    }
+
+    match /meals/{mealId} {
+      allow read: if isAdmin() || isTeacher() ||
+        (isStudent() && resource.data.studentId == request.auth.uid);
+      allow list: if isAdmin() || isTeacher() || isStudent();
+      allow create: if isAdmin() || isTeacher() ||
+        (isStudent() && request.resource.data.studentId == request.auth.uid);
+      allow update: if isAdmin() || isTeacher();
       allow delete: if false;
     }
 
     match /logs/{logId} {
-      allow read, create: if isAdmin();
+      allow read, create: if isAdmin() || isTeacher();
       allow update, delete: if false;
     }
 
-    // All non-admin domain access remains closed until its role-based policy is implemented.
     match /{document=**} {
       allow read, write: if false;
     }

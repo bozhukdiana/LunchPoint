@@ -13,7 +13,7 @@ import { SignInPage } from '@/features/auth/pages/SignInPage';
 import { UnauthorizedPage } from '@/features/auth/pages/UnauthorizedPage';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { StudentDashboardPage } from '@/features/student/pages/StudentDashboardPage';
-import { TeacherPlaceholderPage } from '@/features/teacher/pages/TeacherPlaceholderPage';
+import { TeacherDashboardPage } from '@/features/teacher/pages/TeacherDashboardPage';
 import { PublicOnlyRoute } from '@/routes/guards/PublicOnlyRoute';
 import { RequireAuthenticated } from '@/routes/guards/RequireAuthenticated';
 import { RequireRole } from '@/routes/guards/RequireRole';
@@ -46,7 +46,7 @@ const router = createBrowserRouter([
     element: (
       <RequireAuthenticated>
         <RequireRole allowedRoles={['teacher']}>
-          <TeacherPlaceholderPage />
+          <TeacherDashboardPage />
         </RequireRole>
       </RequireAuthenticated>
     ),
