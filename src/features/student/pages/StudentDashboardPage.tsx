@@ -1,6 +1,7 @@
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { ErrorState, LoadingState, TodaySummary } from '@/features/student/components';
+import { ErrorState, LoadingState, Toaster, TodaySummary } from '@/features/student/components';
 import { useMarkMeal, useTodayMeal } from '@/features/student/hooks/useStudentData';
+import { useToast } from '@/features/student/hooks/useToast';
 import { useClasses } from '@/features/admin/hooks/useAdminData';
 
 export function StudentDashboardPage() {
@@ -11,12 +12,20 @@ export function StudentDashboardPage() {
   const mealQuery = useTodayMeal(studentUid);
   const classesQuery = useClasses();
   const markMealMutation = useMarkMeal(studentUid, classId);
+  const toast = useToast();
 
   if (mealQuery.isPending || classesQuery.isPending) return <LoadingState />;
   if (mealQuery.isError) return <ErrorState />;
 
   const status = mealQuery.data ? mealQuery.data.status : 'pending';
   const className = classesQuery.data?.find((c) => c.id === classId)?.name ?? '—';
+
+  const handleMarkMeal = () => {
+    markMealMutation.mutate(undefined, {
+      onSuccess: () => toast.success('✅ Відмітку збережено. Дякуємо!'),
+      onError: () => toast.error('Не вдалося зберегти відмітку. Спробуйте ще раз.'),
+    });
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -38,11 +47,12 @@ export function StudentDashboardPage() {
           className={className}
           displayName={profile!.displayName ?? '—'}
           isSaving={markMealMutation.isPending}
-          onMarkMeal={() => void markMealMutation.mutate()}
-          saveError={markMealMutation.error}
+          onMarkMeal={handleMarkMeal}
           status={status}
         />
       </main>
+
+      <Toaster toasts={toast.toasts} />
     </div>
   );
 }

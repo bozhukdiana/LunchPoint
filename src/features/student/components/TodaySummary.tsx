@@ -16,12 +16,10 @@ type TodaySummaryProps = {
   className: string;
   status: MealStatus;
   isSaving: boolean;
-  saveError: Error | null;
   onMarkMeal: () => void;
 };
 
-export function TodaySummary({ displayName, className, status, isSaving, saveError, onMarkMeal }: TodaySummaryProps) {
-  const isActionDisabled = status !== 'pending';
+export function TodaySummary({ displayName, className, status, isSaving, onMarkMeal }: TodaySummaryProps) {
   const todayLabel = formatTodayDate();
 
   return (
@@ -35,19 +33,7 @@ export function TodaySummary({ displayName, className, status, isSaving, saveErr
 
       <MealStatusCard status={status} />
 
-      <MealButton disabled={isActionDisabled} isPending={isSaving} onClick={onMarkMeal} />
-
-      {status === 'meal' && (
-        <p className="rounded-lg bg-emerald-50 p-3 text-center text-sm font-medium text-emerald-700">
-          ✅ Відмітку збережено. Дякуємо!
-        </p>
-      )}
-
-      {saveError && (
-        <p className="rounded-lg bg-red-50 p-3 text-center text-sm text-red-700" role="alert">
-          Не вдалося зберегти відмітку. Спробуйте ще раз.
-        </p>
-      )}
+      {status === 'pending' && <MealButton disabled={false} isPending={isSaving} onClick={onMarkMeal} />}
     </div>
   );
 }
