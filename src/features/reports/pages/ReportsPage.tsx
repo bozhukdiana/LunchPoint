@@ -22,12 +22,14 @@ import {
 } from '@/features/reports/hooks/useReportsData';
 import type { ReportFilters } from '@/features/reports/types/reports.types';
 
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
 function getTodayString(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
 function getDefaultDateFrom(): string {
-  return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  return new Date(Date.now() - THIRTY_DAYS_MS).toISOString().slice(0, 10);
 }
 
 const TABS = ['Щоденний', 'За класом', 'Школа'] as const;

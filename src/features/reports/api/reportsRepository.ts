@@ -18,6 +18,8 @@ import type {
 } from '@/features/reports/types/reports.types';
 import { firestore } from '@/firebase/firestore';
 
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
 const db = {
   users: collection(firestore, 'users'),
   classes: collection(firestore, 'classes'),
@@ -230,6 +232,7 @@ function aggregateDaysByWeek(daily: DailyTotals[]): DailyTotals[] {
   for (const d of daily) {
     const dt = new Date(d.date);
     const weekStart = new Date(dt);
+    // Shift to Monday: getDay() returns 0 for Sunday, so +1 aligns to Mon–Sun week
     weekStart.setDate(dt.getDate() - dt.getDay() + 1);
     const key = weekStart.toISOString().slice(0, 10);
     const existing = weekMap.get(key);
@@ -267,7 +270,7 @@ function aggregateDaysByMonth(daily: DailyTotals[]): DailyTotals[] {
 export async function getSchoolReport(filters: ReportFilters): Promise<SchoolReportData> {
   const { dateFrom, dateTo, schoolYearId } = filters;
 
-  const from = dateFrom || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const from = dateFrom || new Date(Date.now() - THIRTY_DAYS_MS).toISOString().slice(0, 10);
   const to = dateTo || new Date().toISOString().slice(0, 10);
 
   const [users, classes, meals] = await Promise.all([
@@ -361,19 +364,28 @@ export async function exportExcel(filters: ReportFilters, rows: DailyReportRow[]
   URL.revokeObjectURL(url);
 }
 
-export async function exportPdf(filters: ReportFilters, rows: DailyReportRow[]): Promise<void> {
+type PdfMaker = { createPdf: (def: unknown) => { download: (name: string) => void }; vfs?: unknown };
+
+async function loadPdfMaker(): Promise<PdfMaker> {
   const pdfMakeModule = (await import('pdfmake/build/pdfmake')) as {
-    default?: { createPdf: (def: unknown) => { download: (name: string) => void }; vfs?: unknown };
-    createPdf?: (def: unknown) => { download: (name: string) => void };
+    default?: PdfMaker;
+    createPdf?: PdfMaker['createPdf'];
     vfs?: unknown;
   };
   const pdfFontsModule = (await import('pdfmake/build/vfs_fonts')) as {
     default?: { vfs?: unknown };
     vfs?: unknown;
   };
-  const maker = pdfMakeModule.default ?? pdfMakeModule;
-  (maker as { vfs?: unknown }).vfs =
-    pdfFontsModule.default?.vfs ?? pdfFontsModule.vfs;
+  const maker = (pdfMakeModule.default ?? pdfMakeModule) as PdfMaker;
+  if (!maker.createPdf) {
+    throw new Error('pdfmake failed to load: createPdf not found');
+  }
+  maker.vfs = pdfFontsModule.default?.vfs ?? pdfFontsModule.vfs;
+  return maker;
+}
+
+export async function exportPdf(filters: ReportFilters, rows: DailyReportRow[]): Promise<void> {
+  const maker = await loadPdfMaker();
 
   const statusLabel: Record<string, string> = {
     meal: 'Харчується',
@@ -410,7 +422,5 @@ export async function exportPdf(filters: ReportFilters, rows: DailyReportRow[]):
     },
   };
 
-  (maker as { createPdf: (def: unknown) => { download: (name: string) => void } })
-    .createPdf(docDefinition)
-    .download(`LunchPoint_Report_${filters.date}.pdf`);
+  maker.createPdf(docDefinition).download(`LunchPoint_Report_${filters.date}.pdf`);
 }
