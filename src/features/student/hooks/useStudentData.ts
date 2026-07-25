@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getTodayMeal, markMeal } from '@/features/student/api/studentRepository';
 import type { MealRecord } from '@/features/student/types/student.types';
+import { getTodayDateString } from '@/features/student/utils/dateUtils';
 
 export const studentQueryKeys = {
   todayMeal: (uid: string) => ['student', 'meal', 'today', uid] as const,
@@ -13,14 +14,6 @@ export function useTodayMeal(studentUid: string) {
   });
 }
 
-function buildTodayDateString(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
 export function useMarkMeal(studentUid: string, classId: string) {
   const queryClient = useQueryClient();
   const key = studentQueryKeys.todayMeal(studentUid);
@@ -30,7 +23,7 @@ export function useMarkMeal(studentUid: string, classId: string) {
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: key });
       const previous = queryClient.getQueryData<MealRecord | null>(key);
-      const today = buildTodayDateString();
+      const today = getTodayDateString();
       const optimistic: MealRecord = {
         id: `${today}_${studentUid}`,
         studentId: studentUid,

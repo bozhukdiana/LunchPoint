@@ -1,14 +1,7 @@
 import { doc, getDoc, runTransaction, serverTimestamp } from 'firebase/firestore';
 import type { MealRecord } from '@/features/student/types/student.types';
+import { getTodayDateString } from '@/features/student/utils/dateUtils';
 import { firestore } from '@/firebase/firestore';
-
-function getTodayDateString(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
 
 function getMealDocId(studentUid: string): string {
   return `${getTodayDateString()}_${studentUid}`;

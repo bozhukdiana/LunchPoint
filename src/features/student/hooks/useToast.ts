@@ -15,7 +15,8 @@ export function useToast() {
   const counter = useRef(0);
 
   const addToast = useCallback((message: string, variant: ToastVariant) => {
-    const id = ++counter.current;
+    counter.current += 1;
+    const id = counter.current;
     setToasts((prev) => [...prev, { id, message, variant }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));

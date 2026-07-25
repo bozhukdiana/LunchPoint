@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { MealStatus } from '@/features/student/types/student.types';
 import { MealButton } from '@/features/student/components/MealButton';
 import { MealStatusCard } from '@/features/student/components/MealStatusCard';
@@ -20,7 +21,7 @@ type TodaySummaryProps = {
 };
 
 export function TodaySummary({ displayName, className, status, isSaving, onMarkMeal }: TodaySummaryProps) {
-  const todayLabel = formatTodayDate();
+  const todayLabel = useMemo(() => formatTodayDate(), []);
 
   return (
     <div className="space-y-5">

@@ -23,7 +23,8 @@ export function StudentDashboardPage() {
   const handleMarkMeal = () => {
     markMealMutation.mutate(undefined, {
       onSuccess: () => toast.success('✅ Відмітку збережено. Дякуємо!'),
-      onError: () => toast.error('Не вдалося зберегти відмітку. Спробуйте ще раз.'),
+      onError: (err) =>
+        toast.error(err instanceof Error ? err.message : 'Не вдалося зберегти відмітку. Спробуйте ще раз.'),
     });
   };
 
