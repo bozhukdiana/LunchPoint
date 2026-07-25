@@ -3,7 +3,6 @@ import { AdminLayout } from '@/features/admin/components/AdminLayout';
 import { AdminDashboardPage } from '@/features/admin/pages/AdminDashboardPage';
 import { ClassesPage } from '@/features/admin/pages/ClassesPage';
 import { LogsPage } from '@/features/admin/pages/LogsPage';
-import { ReportsPlaceholderPage } from '@/features/admin/pages/ReportsPlaceholderPage';
 import { SchoolYearsPage } from '@/features/admin/pages/SchoolYearsPage';
 import { SettingsPage } from '@/features/admin/pages/SettingsPage';
 import { UsersPage } from '@/features/admin/pages/UsersPage';
@@ -12,6 +11,7 @@ import { AuthErrorPage } from '@/features/auth/pages/AuthErrorPage';
 import { SignInPage } from '@/features/auth/pages/SignInPage';
 import { UnauthorizedPage } from '@/features/auth/pages/UnauthorizedPage';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { ReportsPage } from '@/features/reports/pages/ReportsPage';
 import { StudentDashboardPage } from '@/features/student/pages/StudentDashboardPage';
 import { TeacherDashboardPage } from '@/features/teacher/pages/TeacherDashboardPage';
 import { PublicOnlyRoute } from '@/routes/guards/PublicOnlyRoute';
@@ -67,7 +67,7 @@ const router = createBrowserRouter([
       { path: 'school-years', element: <SchoolYearsPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: 'logs', element: <LogsPage /> },
-      { path: 'reports', element: <ReportsPlaceholderPage /> },
+      { path: 'reports', element: <ReportsPage /> },
     ],
   },
   {
