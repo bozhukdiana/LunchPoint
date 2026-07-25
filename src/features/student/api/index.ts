@@ -1,1 +1,1 @@
-export {};
+export { getTodayMeal, markMeal } from './studentRepository';
