@@ -9,6 +9,7 @@ const navigation = [
   ['/settings', 'Налаштування'],
   ['/logs', 'Журнал змін'],
   ['/reports', 'Звіти'],
+  ['/import', 'Імпорт'],
 ] as const;
 
 export function AdminLayout() {

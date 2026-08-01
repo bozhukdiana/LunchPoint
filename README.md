@@ -4,7 +4,7 @@ School meal attendance management for Ліцей №1 м. Копичинці.
 
 ## Development
 
-1. Copy `.env.example` to `.env` and supply Firebase web configuration values.
+1. Copy `.env.example` to `.env.local` and supply all Firebase web configuration values from your Firebase Console project settings.
 2. Install dependencies with `npm install`.
 3. Start the local server with `npm run dev`.
 
