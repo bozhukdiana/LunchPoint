@@ -6,23 +6,32 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function currentUserPath() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+
+    function hasCurrentUserProfile() {
+      return isSignedIn() && exists(currentUserPath());
+    }
+
+    function currentUserRole() {
+      return hasCurrentUserProfile() ? get(currentUserPath()).data.role : null;
+    }
+
     function isAdmin() {
-      return isSignedIn() &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return currentUserRole() == 'admin';
     }
 
     function isTeacher() {
-      return isSignedIn() &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
+      return currentUserRole() == 'teacher';
     }
 
     function isStudent() {
-      return isSignedIn() &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'student';
+      return currentUserRole() == 'student';
     }
 
     function teacherClassId() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.classId;
+      return hasCurrentUserProfile() ? get(currentUserPath()).data.classId : null;
     }
 
     match /users/{userId} {
